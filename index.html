@@ -37,6 +37,12 @@
                     <label class="block text-sm font-medium text-slate-600 mb-1">Senha</label>
                     <input type="password" id="cad-senha" required class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500">
                 </div>
+                <!-- NOVO CAMPO DE CONVITE AQUI -->
+                <div>
+                    <label class="block text-sm font-medium text-purple-600 mb-1"><i class="fa-solid fa-key"></i> Código de Convite</label>
+                    <input type="text" id="cad-codigo" required placeholder="Ex: GABRIEL-CRM-2026" class="w-full border border-purple-300 rounded-lg px-4 py-2 focus:outline-none focus:border-purple-500 bg-purple-50 placeholder-purple-300">
+                </div>
+                <!-- FIM DO NOVO CAMPO -->
                 <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition">Criar Conta</button>
                 <p class="text-center text-sm text-slate-500 mt-4">Já tem uma conta? <a href="#" onclick="alternarTelaLogin('login')" class="text-blue-600 hover:underline">Faça Login</a></p>
             </form>
@@ -415,12 +421,19 @@
             const nome = document.getElementById('cad-nome').value;
             const email = document.getElementById('cad-email').value;
             const senha = document.getElementById('cad-senha').value;
+            const codigo = document.getElementById('cad-codigo').value; // <- Pega o código digitado no formulário
 
             try {
                 const res = await fetch(`${API_URL}/users/`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: nome, email: email, password: senha })
+                    // Envia o invite_code junto na requisição:
+                    body: JSON.stringify({ 
+                        name: nome, 
+                        email: email, 
+                        password: senha, 
+                        invite_code: codigo 
+                    })
                 });
 
                 if (res.ok) {
@@ -428,7 +441,9 @@
                     document.getElementById('form-cadastro').reset();
                     alternarTelaLogin('login');
                 } else {
-                    alert('Erro ao criar conta. O e-mail pode já estar em uso.');
+                    // Captura a mensagem de erro específica do back-end (ex: Código inválido ou e-mail em uso)
+                    const erro = await res.json();
+                    alert(`Erro: ${erro.detail}`);
                 }
             } catch (err) {
                 console.error(err);
