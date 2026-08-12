@@ -1,0 +1,3 @@
+@echo off
+title CRM Pro - Abrindo Interface
+start http://127.0.0.1:5500 (ou o caminho do seu arquivo html)
